@@ -26,10 +26,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="stdafx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ex3.cpp">
+    <ClCompile Include="ex3.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

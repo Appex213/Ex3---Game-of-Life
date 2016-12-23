@@ -18,7 +18,9 @@ void LiveCells(char board[MAX_WIDTH][MAX_HEIGHT], int width, int height);
 int IsCellPosValid(int i, int j, int width, int height, int color);
 void PrintBoard(const board[MAX_WIDTH][MAX_HEIGHT], int width, int height);
 void GamePlay(char board[MAX_WIDTH][MAX_HEIGHT], int width, int height, int maxGen);
-void ProcessBoard(char board[MAX_WIDTH][MAX_HEIGHT], int width, int height);
+void TurnPlayer(char board[MAX_WIDTH][MAX_HEIGHT], int width, int height);
+void TurnAI(char board[MAX_WIDTH][MAX_HEIGHT], int width, int height);
+void AICellChoice(char board[MAX_WIDTH][MAX_HEIGHT], int width, int height);
 void AdvanceGen(char board[MAX_WIDTH][MAX_HEIGHT], int width, int height);
 char AdjacentColor(char board[MAX_WIDTH][MAX_HEIGHT], int i, int j, int width, int height);
 
@@ -30,7 +32,7 @@ int main()
 {
 	char board[MAX_WIDTH][MAX_HEIGHT];
 	int width, height;
-	int maxGen;
+	long int maxGen;
 
 	GameStart(board, &width, &height, &maxGen);
 	GamePlay(board, width, height, maxGen);
@@ -46,7 +48,7 @@ void GameStart(char board[MAX_WIDTH][MAX_HEIGHT], int* width, int* height, int* 
 	printf("Welcome to the game of life!\nSettings:\n");
 	InitializeBoard(board, width, height);
 	GetMaxGen(maxGen);
-	ProcessBoard(board, *width, *height);
+	AdvanceGen(board, *width, *height);
 	printf("Welcome to the game of life!\nThis is the initial board :\n");
 	PrintBoard(board, *width, *height);
 
@@ -138,21 +140,89 @@ long int GetMaxGen(int* maxGen)
 {
 	printf("Enter number of generations(>0):\n");
 	scanf("%d", maxGen);
+	printf("\n");
 
 }
 
 void GamePlay(char board[MAX_WIDTH][MAX_HEIGHT], int width, int height, int maxGen)
 {
-	ProcessBoard(board, width, height);
+	int i;
+	for (i = 0; i < maxGen; i++)
+	{
+		if (i % 2 == 0)
+		{
+			printf("R is playing\n");
+			TurnPlayer(board, width, height);
+		}
+		else
+		{
+			printf("G is playing\n");
+			TurnAI(board, width, height);
+		}
+	}
+	return;
+}
+
+void TurnPlayer(char board[MAX_WIDTH][MAX_HEIGHT], int width, int height)
+{
+	int i, j;
+	printf("x y:\n");
+	scanf("%d %d", &i, &j);
+	board[i][j] = 'R';
+	AdvanceGen(board, width, height);
+	PrintBoard(board, width, height);
 
 	return;
 }
 
-void ProcessBoard(char board[MAX_WIDTH][MAX_HEIGHT], int width, int height)
+void TurnAI(char board[MAX_WIDTH][MAX_HEIGHT], int width, int height)
 {
+	AICellChoice(board, width, height);
+	printf("\n");
 	AdvanceGen(board, width, height);
+	PrintBoard(board, width, height);
+
 
 	return;
+}
+
+void AICellChoice(char board[MAX_WIDTH][MAX_HEIGHT], int width, int height)
+{
+	int i, j, a;
+	for (i = 0; i < width; i++)
+		for (j = 0;j < height;j++)
+		{
+			a = AdjacentTo(board, i, j, width, height);
+			if (board[i][j] == 'R' && a > 1 && a < 4)
+			{
+				printf("%d %d", i, j);
+				board[i][j] = 'G';
+				return;
+			}
+		}
+	for (i = 0; i < width; i++)
+		for (j = 0;j < height;j++)
+		{
+			a = AdjacentTo(board, i, j, width, height);
+			if (board[i][j] == '-' && AdjacentColor(board, i, j, width, height) == 'R' && a > 1 && a < 4)
+			{
+				printf("%d %d", i, j);
+				board[i][j] = 'G';
+				return;
+			}
+		}
+	for (i = 0; i < width; i++)
+		for (j = 0;j < height;j++)
+		{
+			a = AdjacentTo(board, i, j, width, height);
+			if (board[i][j] == 'R')
+			{
+				printf("%d %d", i, j);
+				board[i][j] = 'G';
+				return;
+			}
+		}
+
 }
 
 void AdvanceGen(char board[MAX_WIDTH][MAX_HEIGHT], int width, int height)
@@ -188,12 +258,14 @@ void AdvanceGen(char board[MAX_WIDTH][MAX_HEIGHT], int width, int height)
 int AdjacentTo(char board[MAX_WIDTH][MAX_HEIGHT], int i, int j, int width, int height)
 {
 	int k, l, count = 0;
-	for (k = -1 ; k <= 1 ; k++) 
-		for (l = -1 ; l <= 1 ; l++)
+	for (k = -1; k <= 1; k++)
 	{
-		if (k != l)
-			if (board[XAdd(i,k,width)][YAdd(j,l,height)] != '-')
-				count++;
+		for (l = -1; l <= 1; l++)
+		{
+			if (k || l)
+				if (board[XAdd(i, k, width)][YAdd(j, l, height)] != '-')
+					count++;
+		}
 	}
 	return count;
 }
@@ -224,17 +296,17 @@ char AdjacentColor(char board[MAX_WIDTH][MAX_HEIGHT], int i, int j, int width, i
 	for (k = -1; k <= 1; k++)
 		for (l = -1; l <= 1; l++)
 		{
-		if (k != l)
+		if (k || l)
 		{
-			if (board[XAdd(i, k, width)][YAdd(j, l, height)] = 'R')
+			if (board[XAdd(i, k, width)][YAdd(j, l, height)] == 'R')
 				count++;
-			if (board[XAdd(i, k, width)][YAdd(j, l, height)] = 'G')
+			if (board[XAdd(i, k, width)][YAdd(j, l, height)] == 'G')
 				count--;
 		}
 		
 	}
-	if (count == 1)
+	if (count > 0)
 		return 'R';
-	if (count == -1)
+	if (count < 0)
 		return 'G';
 }

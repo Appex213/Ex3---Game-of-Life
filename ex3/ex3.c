@@ -2,15 +2,13 @@
 * Matan Ben Moshe
 * 208583070
 * 83-120-04
-* ex2
+* ex3
 ******************************************/
 
 // Standard library
 #include <stdio.h>
-// Extra library for exit() function
-#include <stdlib.h>
 
-/*------------------------------------------------------Github Commit RC1-------------------------------------------------------------*/
+/*------------------------------------------------------Github Commit RC3-------------------------------------------------------------*/
 
 //Constants
 #define MAX_HEIGHT 70
@@ -21,20 +19,20 @@
 #define CLR_PLYR 'R'
 
 // Function Decleration.
-void GameStart(char board[MAX_HEIGHT][MAX_WIDTH], int* height, int* width, int* maxGen, int* Gen, int* doExit);
+void GameStart(char board[MAX_HEIGHT][MAX_WIDTH], int* height, int* width, long int* maxGen, long int* Gen, int* doExit);
 void InitializeBoard(char board[MAX_HEIGHT][MAX_WIDTH], int* height, int* width);
 void GetDimensions(int* height, int* width);
 void LiveCells(char board[MAX_HEIGHT][MAX_WIDTH], int height, int width);
 int IsCellPosValid(int i, int j, int height, int width, int color, char board[MAX_HEIGHT][MAX_WIDTH]);
 void PrintBoard(char board[MAX_HEIGHT][MAX_WIDTH], int height, int width);
-void GamePlay(char board[MAX_HEIGHT][MAX_WIDTH], int height, int width, int maxGen, int* Gen, int* doExit);
-void TurnPlayer(char board[MAX_HEIGHT][MAX_WIDTH], int height, int width, int maxGen, int* Gen, int* doExit);
-void TurnAI(char board[MAX_HEIGHT][MAX_WIDTH], int height, int width, int maxGen, int* Gen, int* doExit);
+void GamePlay(char board[MAX_HEIGHT][MAX_WIDTH], int height, int width, long int maxGen, long int* Gen, int* doExit);
+void TurnPlayer(char board[MAX_HEIGHT][MAX_WIDTH], int height, int width, long int maxGen, long int* Gen, int* doExit);
+void TurnAI(char board[MAX_HEIGHT][MAX_WIDTH], int height, int width, long int maxGen, long int* Gen, int* doExit);
 void AICellChoice(char board[MAX_HEIGHT][MAX_WIDTH], int height, int width);
 void AdvanceGen(char board[MAX_HEIGHT][MAX_WIDTH], int height, int width);
 char AdjacentColor(char board[MAX_HEIGHT][MAX_WIDTH], int i, int j, int height, int width);
-void GetMaxGen(int* maxGen);
-void CheckVictory(char board[MAX_HEIGHT][MAX_WIDTH], int height, int width, int maxGen, int Gen, int doPrintBoard, int* doExit);
+void GetMaxGen(long int* maxGen);
+void CheckVictory(char board[MAX_HEIGHT][MAX_WIDTH], int height, int width, long int maxGen, long int Gen, int doPrintBoard, int* doExit);
 
 
 
@@ -48,7 +46,7 @@ int main()
 {
 	char board[MAX_HEIGHT][MAX_WIDTH];
 	int height, width;
-	int maxGen = -1, Gen = 0;
+	long int maxGen = -1, Gen = 0;
 	// Exit flag. Creates a "path" from CheckVictory back to main in order to exit when the game ends.
 	int doExit = 0;
 
@@ -69,7 +67,7 @@ Output: None
 The function operation: Calls to game initialization functions to get the user's borders, # of cells and # of generations to play. 
 ************************************************************************/
 
-void GameStart(char board[MAX_HEIGHT][MAX_WIDTH], int* height, int* width, int* maxGen, int* Gen, int* doExit)
+void GameStart(char board[MAX_HEIGHT][MAX_WIDTH], int* height, int* width, long int* maxGen, long int* Gen, int* doExit)
 {
 	printf("Welcome to the game of life!\nSettings:\n");
 	InitializeBoard((char (*)[MAX_HEIGHT]) board, height, width);
@@ -217,10 +215,10 @@ Output: None
 The function operation: Gets maximum # of generations to play
 **********************************************************************************************/
 
-void GetMaxGen(int* maxGen)
+void GetMaxGen(long int* maxGen)
 {
 	printf("Enter number of generations(>=0):\n");
-	scanf("%d", maxGen);
+	scanf("%ld", maxGen);
 	printf("\n");
 
 }
@@ -232,7 +230,7 @@ Output: None
 The function operation: Handles player and AI turns and call to logic functions accordingly.
 **********************************************************************************************/
 
-void GamePlay(char board[MAX_HEIGHT][MAX_WIDTH], int height, int width, int maxGen, int* Gen, int* doExit)
+void GamePlay(char board[MAX_HEIGHT][MAX_WIDTH], int height, int width, long int maxGen, long int* Gen, int* doExit)
 {
 	int i;
 	for (i = 0; i < maxGen; i++)
@@ -264,7 +262,7 @@ Output: None
 The function operation: Player turn functions. Gets cell position from player, checks for victory, calculates next gen board, prints the board and checks for victory again.
 **********************************************************************************************/
 
-void TurnPlayer(char board[MAX_HEIGHT][MAX_WIDTH], int height, int width, int maxGen, int* Gen, int* doExit)
+void TurnPlayer(char board[MAX_HEIGHT][MAX_WIDTH], int height, int width, long int maxGen, long int* Gen, int* doExit)
 {
 	//doPrintBoard - if victory conditions are met before processing the board, print the board before victory message.
 	int i, j, doPrintBoard = *Gen;
@@ -292,7 +290,7 @@ Output: None
 The function operation: AI turn functions. Gets cell position from AI algorithem, checks for victory, calculates next gen board, prints the board and checks for victory again.
 **********************************************************************************************/
 
-void TurnAI(char board[MAX_HEIGHT][MAX_WIDTH], int height, int width, int maxGen, int* Gen, int* doExit)
+void TurnAI(char board[MAX_HEIGHT][MAX_WIDTH], int height, int width, long int maxGen, long int* Gen, int* doExit)
 {
 	// Same as in TurnPlayer
 	int doPrintBoard = *Gen;
@@ -518,7 +516,7 @@ The function operation: Checks type of victory (or none) according to CheckVicto
 						then print correct victory message and terminate the program.
 **********************************************************************************************/
 
-void CheckVictory(char board[MAX_HEIGHT][MAX_WIDTH], int height, int width, int maxGen, int Gen, int doPrintBoard, int* doExit)
+void CheckVictory(char board[MAX_HEIGHT][MAX_WIDTH], int height, int width, long int maxGen, long int Gen, int doPrintBoard, int* doExit)
 {
 	int a;
 	//type of victory (or none) according to CheckVictoryCondition.
@@ -569,7 +567,7 @@ The function operation: Checks the board to see if any victory conditios where m
 																	0. If no conditions were met, continue the game.
 **********************************************************************************************/
 
-int CheckVictoryCondition(char board[MAX_HEIGHT][MAX_WIDTH], int height, int width, int maxGen, int Gen)
+int CheckVictoryCondition(char board[MAX_HEIGHT][MAX_WIDTH], int height, int width, long int maxGen, long int Gen)
 {
 	int countG = 0, countR = 0, i, j;
 	// Counts # of R and G cells on the board.

@@ -35,6 +35,16 @@ void GetMaxGen(long int* maxGen);
 void CheckVictory(char board[MAX_HEIGHT][MAX_WIDTH], int height, int width, long int maxGen, long int Gen, int doPrintBoard, int* doExit);
 
 
+/*
+Comments:
+I use doExit as a way to return to the main function from the victory check function in case a win condition was met and the program needs to quit.
+
+I use doPrintBoard as a way to let the program know weather to print the board before the winning message or not. When a player wins after a move was made but before 
+the board was changed into the next generation the board isn't printed by the player/AI turn function, so I added this variable. The variable is set to the value of the generation before a move
+was made and before the generation advanced. If the player wins after a move but before the next generation, the value of doPrintBoard and Gen is equal and the victory function prints the board
+before printing the winning message.
+*/
+
 
 /*************************************************************************
 Function name: Main
@@ -72,6 +82,7 @@ void GameStart(char board[MAX_HEIGHT][MAX_WIDTH], int* height, int* width, long 
 	printf("Welcome to the game of life!\nSettings:\n");
 	InitializeBoard((char (*)[MAX_HEIGHT]) board, height, width);
 	// Check if board is empty, or only one color was added.
+	// I pass -10 to CheckVictory into doPrintBoard just so it won't be equal to Gen and print the board.
 	CheckVictory((char (*)[MAX_HEIGHT]) board, *height, *width, *maxGen, *Gen, -10, doExit);
 	//Return if victory was achieved.
 	if (*doExit == 1)

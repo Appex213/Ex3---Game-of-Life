@@ -35,16 +35,6 @@ void GetMaxGen(long int* maxGen);
 void CheckVictory(char board[MAX_HEIGHT][MAX_WIDTH], int height, int width, long int maxGen, long int Gen, int doPrintBoard, int* doExit);
 
 
-/*
-Comments:
-I use doExit as a way to return to the main function from the victory check function in case a win condition was met and the program needs to quit.
-
-I use doPrintBoard as a way to let the program know weather to print the board before the winning message or not. When a player wins after a move was made but before 
-the board was changed into the next generation the board isn't printed by the player/AI turn function, so I added this variable. The variable is set to the value of the generation before a move
-was made and before the generation advanced. If the player wins after a move but before the next generation, the value of doPrintBoard and Gen is equal and the victory function prints the board
-before printing the winning message.
-*/
-
 
 /*************************************************************************
 Function name: Main
@@ -82,8 +72,7 @@ void GameStart(char board[MAX_HEIGHT][MAX_WIDTH], int* height, int* width, long 
 	printf("Welcome to the game of life!\nSettings:\n");
 	InitializeBoard((char (*)[MAX_HEIGHT]) board, height, width);
 	// Check if board is empty, or only one color was added.
-	// I pass -10 to CheckVictory into doPrintBoard just so it won't be equal to Gen and print the board.
-	CheckVictory((char (*)[MAX_HEIGHT]) board, *height, *width, *maxGen, *Gen, -10, doExit);
+	CheckVictory((char (*)[MAX_HEIGHT]) board, *height, *width, *maxGen, *Gen, 0, doExit);
 	//Return if victory was achieved.
 	if (*doExit == 1)
 		return;
@@ -92,7 +81,7 @@ void GameStart(char board[MAX_HEIGHT][MAX_WIDTH], int* height, int* width, long 
 	printf("Welcome to the game of life!\nThis is the initial board:\n");
 	PrintBoard((char (*)[MAX_HEIGHT]) board, *height, *width);
 	// Check if after initial gen board is empty, one color left, or maxGen is 0.
-	CheckVictory((char (*)[MAX_HEIGHT]) board, *height, *width, *maxGen, *Gen, -10, doExit);
+	CheckVictory((char (*)[MAX_HEIGHT]) board, *height, *width, *maxGen, *Gen, 0, doExit);
 
 	return;
 }
@@ -275,13 +264,13 @@ The function operation: Player turn functions. Gets cell position from player, c
 
 void TurnPlayer(char board[MAX_HEIGHT][MAX_WIDTH], int height, int width, long int maxGen, long int* Gen, int* doExit)
 {
-	//doPrintBoard - if victory conditions are met before processing the board, print the board before victory message.
-	int i, j, doPrintBoard = *Gen;
+	int i, j;
 	printf("x y:\n");
 	scanf("%d %d", &i, &j);
 	board[i][j] = 'R';
 	//Check if victory conditions are met before processing the board.
-	CheckVictory((char(*)[MAX_HEIGHT]) board, height, width, maxGen, *Gen, doPrintBoard, doExit);
+	//Pass 1 into doPrintBoard flag in CheckVictory (print the board before winning message).
+	CheckVictory((char(*)[MAX_HEIGHT]) board, height, width, maxGen, *Gen, 1, doExit);
 	//Return if victory was achieved.
 	if (*doExit == 1)
 		return;
@@ -289,7 +278,7 @@ void TurnPlayer(char board[MAX_HEIGHT][MAX_WIDTH], int height, int width, long i
 	AdvanceGen((char (*)[MAX_HEIGHT]) board, height, width);
 	PrintBoard((char (*)[MAX_HEIGHT]) board, height, width);
 	//Check if victory conditions are met after processing the board.
-	CheckVictory((char(*)[MAX_HEIGHT]) board, height, width, maxGen, *Gen, doPrintBoard, doExit);
+	CheckVictory((char(*)[MAX_HEIGHT]) board, height, width, maxGen, *Gen, 0, doExit);
 
 	return;
 }
@@ -303,13 +292,12 @@ The function operation: AI turn functions. Gets cell position from AI algorithem
 
 void TurnAI(char board[MAX_HEIGHT][MAX_WIDTH], int height, int width, long int maxGen, long int* Gen, int* doExit)
 {
-	// Same as in TurnPlayer
-	int doPrintBoard = *Gen;
 	// Choose cell according to AI algorithem.
 	AICellChoice((char (*)[MAX_HEIGHT]) board, height, width);
 	printf("\n");
 	//Check if victory conditions are met before processing the board.
-	CheckVictory((char(*)[MAX_HEIGHT]) board, height, width, maxGen, *Gen, doPrintBoard, doExit);
+	//Pass 1 into doPrintBoard flag in CheckVictory (print the board before winning message).
+	CheckVictory((char(*)[MAX_HEIGHT]) board, height, width, maxGen, *Gen, 1, doExit);
 	//Return if victory was achieved.
 	if (*doExit == 1)
 		return;
@@ -317,7 +305,7 @@ void TurnAI(char board[MAX_HEIGHT][MAX_WIDTH], int height, int width, long int m
 	*Gen += 1;
 	PrintBoard((char (*)[MAX_HEIGHT]) board, height, width);
 	//Check if victory conditions are met after processing the board.
-	CheckVictory((char(*)[MAX_HEIGHT]) board, height, width, maxGen, *Gen, doPrintBoard, doExit);
+	CheckVictory((char(*)[MAX_HEIGHT]) board, height, width, maxGen, *Gen, 0, doExit);
 
 	return;
 }
@@ -529,27 +517,33 @@ The function operation: Checks type of victory (or none) according to CheckVicto
 
 void CheckVictory(char board[MAX_HEIGHT][MAX_WIDTH], int height, int width, long int maxGen, long int Gen, int doPrintBoard, int* doExit)
 {
+	/*
+	doPrintBoard - 
+			a flag to let the function know when to print the board before the winning message.
+			If a player wins after a cell choice but before the board advances into the next gen, the TurnPlayer and TurnAI functions do not print the board by default, so this
+			flag is used to print the board anyway.
+	*/
 	int a;
 	//type of victory (or none) according to CheckVictoryCondition.
 	a = CheckVictoryCondition((char (*)[MAX_HEIGHT]) board, height, width, maxGen, Gen);
 	switch (a)
 	{
 	case 1:
-		if (doPrintBoard == Gen)
+		if (doPrintBoard == 1)
 			PrintBoard((char(*)[MAX_HEIGHT]) board, height, width);
 		printf("Game over! R is the winner :)\n");
 		//Trigger exit flag.
 		*doExit = 1;
 		break;
 	case 2:
-		if (doPrintBoard == Gen)
+		if (doPrintBoard == 1)
 			PrintBoard((char(*)[MAX_HEIGHT]) board, height, width);
 		printf("Game over! G is the winner :(\n");
 		//Trigger exit flag.
 		*doExit = 1;
 		break;
 	case 3:
-		if (doPrintBoard == Gen)
+		if (doPrintBoard == 1)
 			PrintBoard((char(*)[MAX_HEIGHT]) board, height, width);
 		printf("Game over! There is no winner :|\n");
 		//Trigger exit flag.

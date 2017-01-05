@@ -8,15 +8,18 @@
 // Standard library
 #include <stdio.h>
 
-/*------------------------------------------------------Github Commit RC3-------------------------------------------------------------*/
+/*------------------------------------------------------Github Commit Release-------------------------------------------------------------*/
 
 //Constants
 #define MAX_HEIGHT 70
 #define MAX_WIDTH 70
 #define MIN_WIDTH 10
 #define MIN_HEIGHT 10
+/* 
 #define CLR_AI 'G'
 #define CLR_PLYR 'R'
+Didn't use these because they don't simplify anything. R and G is pretty self-explanatory
+*/
 
 // Function Decleration.
 void GameStart(char board[MAX_HEIGHT][MAX_WIDTH], int* height, int* width, long int* maxGen, long int* Gen, int* doExit);

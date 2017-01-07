@@ -273,7 +273,7 @@ void TurnPlayer(char board[MAX_HEIGHT][MAX_WIDTH], int height, int width, long i
 		printf("x y:\n");
 		scanf("%d %d", &i, &j);
 	//Check if input cell is within the board.
-	} while (i > height && i <= 0 && j > width && j <= 0);
+	} while (i > height || i < 0 || j > width || j < 0);
 	board[i][j] = 'R';
 	//Check if victory conditions are met before processing the board.
 	//Pass 1 into doPrintBoard flag in CheckVictory (print the board before winning message).
